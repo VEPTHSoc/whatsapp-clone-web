@@ -7,6 +7,7 @@ import * as EmailValidator from "email-validator";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useCollection } from "react-firebase-hooks/firestore";
 import { auth, db } from "../firebase";
+import Chat from "./Chat";
 
 function Sidebar() {
   const [user] = useAuthState(auth);
@@ -15,6 +16,7 @@ function Sidebar() {
     .where("users", "array-contains", user.email);
 
   const [chatsSnapshot] = useCollection(userChatRef);
+
   const createChat = () => {
     const input = prompt("Please enter an email address");
     if (!input) {
@@ -56,6 +58,9 @@ function Sidebar() {
       </Search>
 
       <SidebarButton onClick={createChat}> Start a new Chat</SidebarButton>
+      {chatsSnapshot?.docs.map((chat) => (
+        <Chat key={chat.id} id={chat.id} user={chat.data().users} />
+      ))}
     </Container>
   );
 }
